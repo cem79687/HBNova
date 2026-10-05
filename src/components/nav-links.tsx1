@@ -1,0 +1,81 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const links = [
+  { href: "/", label: "Tableau de bord", icon: "dashboard" },
+  { href: "/clients", label: "Clients", icon: "clients" },
+] as const;
+
+function Icon({ name }: { name: "dashboard" | "clients" }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-[18px] w-[18px] shrink-0"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {name === "dashboard" ? (
+        <>
+          <rect x="3" y="3" width="7" height="9" rx="1" />
+          <rect x="14" y="3" width="7" height="5" rx="1" />
+          <rect x="14" y="12" width="7" height="9" rx="1" />
+          <rect x="3" y="16" width="7" height="5" rx="1" />
+        </>
+      ) : (
+        <>
+          <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
+          <circle cx="10" cy="7" r="4" />
+          <path d="M21 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8" />
+        </>
+      )}
+    </svg>
+  );
+}
+
+export default function NavLinks({ variant }: { variant: "side" | "bottom" }) {
+  const pathname = usePathname();
+
+  return (
+    <ul
+      className={
+        variant === "side"
+          ? "flex flex-col gap-1"
+          : "flex justify-around pb-[env(safe-area-inset-bottom)]"
+      }
+    >
+      {links.map((link) => {
+        const active =
+          link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+
+        const base =
+          variant === "side"
+            ? "flex items-center gap-3 rounded-md px-3 py-2.5 font-medium"
+            : "flex flex-1 flex-col items-center gap-0.5 px-3 py-2 text-xs font-medium";
+        const state = active
+          ? variant === "side"
+            ? "bg-brand/20 text-white shadow-[inset_3px_0_0_var(--brand)]"
+            : "text-white shadow-[inset_0_3px_0_var(--brand)]"
+          : "text-white/70 hover:bg-white/10 hover:text-white";
+
+        return (
+          <li key={link.href} className={variant === "bottom" ? "flex-1" : ""}>
+            <Link
+              href={link.href}
+              aria-current={active ? "page" : undefined}
+              className={`${base} ${state}`}
+            >
+              <Icon name={link.icon} />
+              {link.label}
+            </Link>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
